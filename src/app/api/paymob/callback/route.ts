@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const merchantOrderId = String(obj?.order?.merchant_order_id ?? "");
   const success = Boolean(obj?.success);
 
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseAdmin() as any;
 
   await supabase.from("payments").insert({
     order_id: null,
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     provider_order_id: paymobOrderId,
     provider_txn_id: String(obj?.id || ""),
     raw_payload: payload,
-  } as any);
+  });
 
   if (ok && merchantOrderId) {
     await supabase
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         payment_status: success ? "paid" : "failed",
         status: success ? "confirmed" : "pending",
         paymob_transaction_id: String(obj?.id || ""),
-      } as any)
+      })
       .eq("order_number", merchantOrderId);
   }
 
