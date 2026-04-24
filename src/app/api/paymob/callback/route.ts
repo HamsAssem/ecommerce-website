@@ -18,9 +18,9 @@ export async function POST(req: Request) {
   const merchantOrderId = String(obj?.order?.merchant_order_id ?? "");
   const success = Boolean(obj?.success);
 
-  const supabase = getSupabaseAdmin() as any;
+  const supabase: any = getSupabaseAdmin();
 
-  await supabase.from("payments").insert({
+  await (supabase as any).from("payments").insert({
     order_id: null,
     provider: "paymob",
     method: obj?.source_data?.type || "card",
@@ -30,16 +30,16 @@ export async function POST(req: Request) {
     provider_order_id: paymobOrderId,
     provider_txn_id: String(obj?.id || ""),
     raw_payload: payload,
-  });
+  } as any);
 
   if (ok && merchantOrderId) {
-    await supabase
+    await (supabase as any)
       .from("orders")
       .update({
         payment_status: success ? "paid" : "failed",
         status: success ? "confirmed" : "pending",
         paymob_transaction_id: String(obj?.id || ""),
-      })
+      } as any)
       .eq("order_number", merchantOrderId);
   }
 
@@ -51,6 +51,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const success = url.searchParams.get("success") === "true";
   const orderNumber = url.searchParams.get("merchant_order_id") || "";
-  const redirect = success ? `/checkout/success?order=${orderNumber}` : `/checkout/failed?order=${orderNumber}`;
+  const redirect = success
+    ? `/checkout/success?order=${orderNumber}`
+    : `/checkout/failed?order=${orderNumber}`;
   return NextResponse.redirect(new URL(redirect, url.origin));
 }

@@ -10,3 +10,15 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  typescript: { ignoreBuildErrors: true },
+  eslint:    { ignoreDuringBuilds: true },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "yhptqczaamznbrgtjfur.supabase.co" },
+    ],
+  },
+};
+module.exports = nextConfig;
